@@ -32,97 +32,110 @@ class _QuizPageState extends State<QuizPage> {
     currentQuestion = 0;
   }
 
+  void goToNextQuestion() {
+    currentQuestion++;
+
+    if (currentQuestion >= drill.questions.length) {
+      currentQuestion = drill.questions.length - 1;
+
+      Alert(
+        style: AlertStyle(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          isOverlayTapDismiss: false,
+          descStyle: Theme.of(context).textTheme.bodyText1,
+          titleStyle: Theme.of(context).textTheme.headline5,
+        ),
+        closeFunction: () {
+          setState(() {
+            restartWithDrill(newDrill: drill.getNewDrill());
+          });
+        },
+        context: context,
+        title: 'Congratulations!',
+        desc:
+            "You've Completed the Quiz with a final score of ${drill.finalScore} / ${drill.questions.length}! \nShow your parents!",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Restart Quiz",
+              style: kDialogButtonTextStyle,
+            ),
+            onPressed: () {
+              setState(() {
+                restartWithDrill(newDrill: drill.getNewDrill());
+              });
+
+              Navigator.pop(context);
+            },
+            //width: 150,
+          ),
+          DialogButton(
+            child: Text(
+              "Review",
+              style: kDialogButtonTextStyle,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ThemeConsumer(
+                    child: ResultsPage(
+                      completedDrill: drill,
+                    ),
+                  ),
+                ),
+              );
+            },
+            //width: 150,
+          )
+        ],
+      ).show();
+    }
+  }
+
   void checkAnswer(String answer) {
+    drill.appendAnswer(answer);
+
     setState(() {
-      Alert wrongAnswerAlert;
-      Alert quizCompletedAlert;
-
-      drill.appendAnswer(answer);
-
       if (answer == drill.questions[currentQuestion].answer) {
         drill.finalScore++;
         scoreKeeper.add(kRightAnswerIcon);
+        goToNextQuestion();
       } else {
-        String correctAnswer = drill.questions[currentQuestion].toString();
-        String wrongAnswer =
-            drill.questions[currentQuestion].question + ' is not ' + answer;
-        wrongAnswerAlert = Alert(
-          context: context,
-          title: 'Whoops!',
-          desc: wrongAnswer,
-          buttons: [
-            DialogButton(
-              child: Text(
-                correctAnswer,
-                style: kIncorrectAnswerTextStyle,
-              ),
-              onPressed: () => Navigator.pop(context),
-              //width: 150,
-            )
-          ],
-        );
-        scoreKeeper.add(kWrongAnswerIcon);
-      }
-
-      currentQuestion++;
-      if (currentQuestion >= drill.questions.length) {
-        var score = drill.finalScore;
-        var total = drill.questions.length;
-
-        currentQuestion = drill.questions.length - 1;
-
-        quizCompletedAlert = Alert(
+        Alert(
           closeFunction: () {
             setState(() {
-              restartWithDrill(newDrill: drill.getNewDrill());
+              goToNextQuestion();
             });
           },
+          style: AlertStyle(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            isOverlayTapDismiss: false,
+            descStyle: Theme.of(context).textTheme.headline5,
+            titleStyle: Theme.of(context).textTheme.headline5,
+          ),
           context: context,
-          title: 'Congratulations!',
-          desc:
-              "You've Completed the Quiz with a final score of $score / $total! \nShow your parents!",
+          title: 'Whoops!',
+          desc: '${drill.questions[currentQuestion].question} is not $answer',
+          //color: Colors.white,
           buttons: [
             DialogButton(
               child: Text(
-                "Restart Quiz",
-                style: kDialogButtonTextStyle,
+                drill.questions[currentQuestion].toString(),
+                style: kIncorrectAnswerTextStyle,
               ),
               onPressed: () {
                 setState(() {
-                  restartWithDrill(newDrill: drill.getNewDrill());
+                  Navigator.pop(context);
+                  goToNextQuestion();
                 });
-
-                Navigator.pop(context);
-              },
-              //width: 150,
-            ),
-            DialogButton(
-              child: Text(
-                "Review",
-                style: kDialogButtonTextStyle,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ThemeConsumer(
-                      child: ResultsPage(
-                        completedDrill: drill,
-                      ),
-                    ),
-                  ),
-                );
               },
               //width: 150,
             )
           ],
-        );
-
-        //restartWithDrill(newDrill: drill.getNewDrill());
+        ).show();
+        scoreKeeper.add(kWrongAnswerIcon);
       }
-
-      if (quizCompletedAlert != null) quizCompletedAlert.show();
-      if (wrongAnswerAlert != null) wrongAnswerAlert.show();
     });
   }
 
@@ -139,6 +152,10 @@ class _QuizPageState extends State<QuizPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
+              DrawerHeader(
+                child: Image.asset('assets/appstore.png'),
+                padding: EdgeInsets.all(5),
+              ),
               Divider(
                 color: Theme.of(context).dividerColor, //kDrawerDividerColor,
               ),
