@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:mathdrillsapp/drill_generator.dart';
 
 class Question {
@@ -19,6 +20,7 @@ enum DrillType {
   subtraction,
   multiplication,
   division,
+  custom,
 }
 
 class Drill {
@@ -29,11 +31,12 @@ class Drill {
   List<String> answers = [];
   int finalScore = 0;
   DrillType type;
+  DrillSettings settings;
 
-  Drill({@required this.questions, @required this.type});
+  Drill({@required this.questions, @required this.type, this.settings});
 
   Drill getNewDrill() {
-    return DrillGenerator.getDrillWith(type: type);
+    return DrillGenerator.getDrillWith(type: type, settings: settings);
   }
 
   void appendAnswer(String ans) {

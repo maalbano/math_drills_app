@@ -23,3 +23,5 @@ const kDrawerDividerColor = Colors.grey;
 const kDrawerTextStyle = TextStyle(color: Colors.white, fontSize: 20);
 const kDrawerIconColor = Colors.white;
 const kDrawerIconSize = 30.0;
+
+const kBottomContainerHeight = 30.0;

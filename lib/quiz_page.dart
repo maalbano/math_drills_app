@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mathdrillsapp/custom_drill_page.dart';
 import 'package:mathdrillsapp/results_page.dart';
 import 'drill_generator.dart';
 import 'drill.dart';
@@ -238,30 +239,28 @@ class _QuizPageState extends State<QuizPage> {
                 color: kDrawerDividerColor,
               ),
               ListTile(
-                onTap: () {
-                  Alert contactMeAlert = Alert(
-                    context: context,
-                    title: 'I\'m working on it!',
-                    desc:
-                        "If you have any suggestions, please email me at mike@mikealbano.org.",
-                    buttons: [
-                      DialogButton(
-                        child: Text(
-                          'Thanks',
-                          //style: kIncorrectAnswerTextStyle,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      )
-                    ],
+                onTap: () async {
+                  DrillSettings s = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return ThemeConsumer(
+                        child: CustomDrillPage(),
+                      );
+                    }),
                   );
-                  contactMeAlert.show();
+
+                  setState(() {
+                    restartWithDrill(
+                        newDrill: DrillGenerator.getCustomDrill(settings: s));
+                    Navigator.pop(context);
+                  });
                 },
                 leading: Icon(
                   Icons.border_outer,
                   size: kDrawerIconSize,
                   color: Theme.of(context).primaryColor,
                 ),
-                title: Text('Custom Drill (Soon)',
+                title: Text('Create Custom Drill',
                     style: Theme.of(context).textTheme.headline6),
               ),
               Divider(

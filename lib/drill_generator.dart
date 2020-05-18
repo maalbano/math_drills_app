@@ -1,15 +1,37 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
+
 import 'drill.dart';
+import 'dart:math';
+
+class DrillSettings {
+  bool addition;
+  bool subtraction;
+  bool multiplication;
+
+  RangeValues firstOperandRange;
+  RangeValues secondOperandRange;
+
+  DrillSettings(
+      {this.addition,
+      this.subtraction,
+      this.multiplication,
+      this.firstOperandRange,
+      this.secondOperandRange});
+}
 
 class DrillGenerator {
   //A Random Drill Generator
 
-  static Question newQuestionAddition() {
+  static Question newQuestionAddition(
+      {RangeValues r1 = const RangeValues(2, 20),
+      RangeValues r2 = const RangeValues(2, 10)}) {
     // Addition problem
     // first operand min 2, max 21
-    int a = 2 + Random().nextInt(20);
-    // 2nd operand min 2, max 11
-    int b = 2 + Random().nextInt(10);
+    int a = r1.start.toInt() +
+        Random().nextInt(1 + r1.end.toInt() - r1.start.toInt());
+    int b = r2.start.toInt() +
+        Random().nextInt(1 + r2.end.toInt() - r2.start.toInt());
     int ans = a + b;
 
     var q = Question('$a + $b', '$ans');
@@ -21,9 +43,11 @@ class DrillGenerator {
       if (i == pos)
         q.choices.add('$ans');
       else {
-        var wrongAns = ans + Random().nextInt(16) - 8;
+        int swing = max(r1.end.toInt(), r2.end.toInt()) - 1;
+
+        var wrongAns = ans + Random().nextInt(swing * 2) - swing;
         while (wrongAns == ans) {
-          wrongAns = ans + Random().nextInt(16) - 8;
+          wrongAns = ans + Random().nextInt(swing * 2) - swing;
         }
         q.choices.add('$wrongAns');
       }
@@ -31,12 +55,14 @@ class DrillGenerator {
     return q;
   }
 
-  static Question newQuestionSubtraction() {
-    // Addition problem
-    // first operand min 2, max 21
-    int ans = 2 + Random().nextInt(20);
-    // 2nd operand min 2, max 11
-    int b = 2 + Random().nextInt(10);
+  static Question newQuestionSubtraction(
+      {RangeValues r1 = const RangeValues(2, 20),
+      RangeValues r2 = const RangeValues(2, 10)}) {
+    int ans = r1.start.toInt() +
+        Random().nextInt(1 + r1.end.toInt() - r1.start.toInt());
+    int b = r2.start.toInt() +
+        Random().nextInt(1 + r2.end.toInt() - r2.start.toInt());
+
     int a = ans + b;
 
     var q = Question('$a - $b', '$ans');
@@ -48,9 +74,11 @@ class DrillGenerator {
       if (i == pos)
         q.choices.add('$ans');
       else {
-        var wrongAns = ans + Random().nextInt(16) - 8;
+        int swing = max(r1.end.toInt(), r2.end.toInt()) - 1;
+
+        var wrongAns = ans + Random().nextInt(swing * 2) - swing;
         while (wrongAns == ans) {
-          wrongAns = ans + Random().nextInt(16) - 8;
+          wrongAns = ans + Random().nextInt(swing * 2) - swing;
         }
         q.choices.add('$wrongAns');
       }
@@ -58,11 +86,13 @@ class DrillGenerator {
     return q;
   }
 
-  static Question newQuestionMultiplication() {
-    // first operand min 2, max 13
-    int a = 2 + Random().nextInt(12);
-    // first operand min 6, max 9
-    int b = 6 + Random().nextInt(4);
+  static Question newQuestionMultiplication(
+      {RangeValues r1 = const RangeValues(2, 12),
+      RangeValues r2 = const RangeValues(6, 10)}) {
+    int a = r1.start.toInt() +
+        Random().nextInt(1 + r1.end.toInt() - r1.start.toInt());
+    int b = r2.start.toInt() +
+        Random().nextInt(1 + r2.end.toInt() - r2.start.toInt());
     int ans = a * b;
 
     var q = Question('$a x $b', '$ans');
@@ -156,7 +186,30 @@ class DrillGenerator {
         type: DrillType.division);
   }
 
-  static Drill getDrillWith({DrillType type}) {
-    return Drill(questions: getDrillQuestions(type: type), type: type);
+  static Drill getDrillWith({DrillType type, DrillSettings settings}) {
+    if (type == DrillType.custom) {
+      return getCustomDrill(settings: settings);
+    } else {
+      return Drill(questions: getDrillQuestions(type: type), type: type);
+    }
+  }
+
+  static Drill getCustomDrill({DrillSettings settings}) {
+    List<Function> questionGenerators = [];
+
+    if (settings.addition) questionGenerators.add(newQuestionAddition);
+    if (settings.subtraction) questionGenerators.add(newQuestionSubtraction);
+    if (settings.multiplication)
+      questionGenerators.add(newQuestionMultiplication);
+
+    List<Question> questions = [];
+    for (int i = 0; i < 10; i++) {
+      var q = questionGenerators[Random().nextInt(questionGenerators.length)];
+      questions.add(
+          q(r1: settings.firstOperandRange, r2: settings.secondOperandRange));
+    }
+
+    return Drill(
+        questions: questions, type: DrillType.custom, settings: settings);
   }
 }
