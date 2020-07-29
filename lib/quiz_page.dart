@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mathdrillsapp/custom_drill_page.dart';
 import 'package:mathdrillsapp/results_page.dart';
@@ -8,6 +10,7 @@ import 'choice_button.dart';
 import 'constants.dart';
 import 'results_page.dart';
 import 'package:theme_provider/theme_provider.dart';
+import 'about_page.dart';
 
 class QuizPage extends StatefulWidget {
   final Drill drill;
@@ -24,6 +27,9 @@ class _QuizPageState extends State<QuizPage> {
   //Drill drill = DrillGenerator.getDrill();
   Drill drill;
   int currentQuestion = 0;
+  int currentTime = 0;
+
+  Timer t;
 
   _QuizPageState({this.drill});
 
@@ -31,6 +37,16 @@ class _QuizPageState extends State<QuizPage> {
     this.drill = newDrill;
     scoreKeeper = [];
     currentQuestion = 0;
+    stopTimer();
+    startTimer();
+  }
+
+  String convertTimeString(int time) {
+    String mins = '${currentTime ~/ 60}';
+    String secs =
+        currentTime % 60 < 10 ? '0${currentTime % 60}' : '${currentTime % 60}';
+
+    return '$mins:$secs';
   }
 
   void goToNextQuestion() {
@@ -38,6 +54,9 @@ class _QuizPageState extends State<QuizPage> {
 
     if (currentQuestion >= drill.questions.length) {
       currentQuestion = drill.questions.length - 1;
+
+      //stop the timer
+      stopTimer();
 
       Alert(
         style: AlertStyle(
@@ -54,7 +73,7 @@ class _QuizPageState extends State<QuizPage> {
         context: context,
         title: 'Congratulations!',
         desc:
-            "You've Completed the Quiz with a final score of ${drill.finalScore} / ${drill.questions.length}! \nShow your parents!",
+            "You've Completed the Quiz with a final score of ${drill.finalScore} / ${drill.questions.length}! \nYour time is in ${convertTimeString(currentTime)}. \nShow your parents!",
         buttons: [
           DialogButton(
             child: Text(
@@ -140,11 +159,42 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
+  void stopTimer() {
+    t.cancel();
+  }
+
+  void startTimer() {
+    currentTime = 0;
+    t = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        currentTime++;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    startTimer();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Math Drills'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(child: Text('Math Drills')),
+            GestureDetector(
+              child: Icon(Icons.sync),
+              onTap: () {
+                restartWithDrill(newDrill: drill.getNewDrill());
+              },
+            ),
+          ],
+        ),
       ),
       drawer: Drawer(
         child: Container(
@@ -154,7 +204,9 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                child: Image.asset('assets/appstore.png'),
+                child: Image.asset(
+                  'assets/appstore.png',
+                ),
                 padding: EdgeInsets.all(5),
               ),
               Divider(
@@ -249,11 +301,13 @@ class _QuizPageState extends State<QuizPage> {
                     }),
                   );
 
-                  setState(() {
-                    restartWithDrill(
-                        newDrill: DrillGenerator.getCustomDrill(settings: s));
-                    Navigator.pop(context);
-                  });
+                  if (s != null) {
+                    setState(() {
+                      restartWithDrill(
+                          newDrill: DrillGenerator.getCustomDrill(settings: s));
+                      Navigator.pop(context);
+                    });
+                  }
                 },
                 leading: Icon(
                   Icons.border_outer,
@@ -288,6 +342,30 @@ class _QuizPageState extends State<QuizPage> {
               ),
               Divider(
                 color: Colors.grey,
+              ),
+              ListTile(
+                onTap: () {
+                  print('About');
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return ThemeConsumer(
+                        child: AboutPage(),
+                      );
+                    }),
+                  );
+                },
+                leading: Icon(
+                  Icons.insert_emoticon,
+                  size: kDrawerIconSize,
+                  color: Theme.of(context)
+                      .primaryColor, //Theme.of(context).primaryColor,
+                ),
+                title: Text(
+                  'About',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
               ),
             ],
           ),
@@ -357,6 +435,11 @@ class _QuizPageState extends State<QuizPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: scoreKeeper,
           ),
+          Container(
+              child: Text(
+            convertTimeString(currentTime),
+            textAlign: TextAlign.center,
+          ))
         ],
       ),
     );

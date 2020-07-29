@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mathdrillsapp/bottom_button.dart';
 import 'package:mathdrillsapp/drill.dart';
 import 'package:mathdrillsapp/drill_generator.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'constants.dart';
 
 class CustomDrillPage extends StatefulWidget {
@@ -79,47 +80,56 @@ class _CustomDrillPageState extends State<CustomDrillPage> {
               ),
             ),
             //Text('Drill Settings'),
-            Column(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CheckboxListTile(
-                  value: plusSelected,
-                  title: Text('Addition'),
-                  secondary: Icon(
-                    Icons.add,
-                    size: 30,
-                    color: Theme.of(context).primaryColor,
+                InputChip(
+                  label: Text('Addition'),
+                  selected: plusSelected,
+                  avatar: CircleAvatar(
+                    child: Icon(
+                      Icons.add,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
-                  onChanged: (v) {
+                  checkmarkColor: Theme.of(context).accentColor,
+                  selectedColor: Theme.of(context).primaryColor,
+                  onSelected: (v) {
                     setState(() {
                       plusSelected = v;
                     });
                   },
                 ),
-                CheckboxListTile(
-                  value: minusSelected,
-                  title: Text('Subtraction'),
-                  secondary: Icon(
-                    Icons.remove,
-                    size: 30,
-                    color: Theme.of(context).primaryColor,
+                InputChip(
+                  checkmarkColor: Theme.of(context).accentColor,
+                  selectedColor: Theme.of(context).primaryColor,
+                  label: Text('Subtraction'),
+                  selected: minusSelected,
+                  avatar: CircleAvatar(
+                    child: Icon(
+                      Icons.remove,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
-                  onChanged: (v) {
+                  onSelected: (v) {
                     setState(() {
                       minusSelected = v;
                     });
                   },
                 ),
-                CheckboxListTile(
-                  value: multiplicationSelected,
-                  title: Text('Multiplication'),
-                  secondary: Icon(
-                    Icons.close,
-                    size: 30,
-                    color: Theme.of(context).primaryColor,
+                InputChip(
+                  checkmarkColor: Theme.of(context).accentColor,
+                  selectedColor: Theme.of(context).primaryColor,
+                  label: Text('Multiplication'),
+                  selected: multiplicationSelected,
+                  avatar: CircleAvatar(
+                    child: Icon(
+                      Icons.close,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
-                  onChanged: (v) {
+                  onSelected: (v) {
                     setState(() {
                       multiplicationSelected = v;
                     });
@@ -170,14 +180,24 @@ class _CustomDrillPageState extends State<CustomDrillPage> {
               child: BottomButton(
                 label: 'Start Drill',
                 onPressed: () {
-                  DrillSettings settings = DrillSettings(
-                    addition: plusSelected,
-                    subtraction: minusSelected,
-                    multiplication: multiplicationSelected,
-                    firstOperandRange: firstOperandRange,
-                    secondOperandRange: secondOperandRange,
-                  );
-                  Navigator.pop(context, settings);
+                  if (plusSelected ||
+                      minusSelected ||
+                      multiplicationSelected == true) {
+                    DrillSettings settings = DrillSettings(
+                      addition: plusSelected,
+                      subtraction: minusSelected,
+                      multiplication: multiplicationSelected,
+                      firstOperandRange: firstOperandRange,
+                      secondOperandRange: secondOperandRange,
+                    );
+                    Navigator.pop(context, settings);
+                  } else {
+                    Alert(
+                            context: context,
+                            style: getAlertStyle(context),
+                            title: 'Please select at least one operation.')
+                        .show();
+                  }
                 },
               ),
             ),

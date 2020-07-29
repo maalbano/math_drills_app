@@ -1,10 +1,18 @@
+import 'package:flutter/services.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 import 'quiz_page.dart';
 import 'package:flutter/material.dart';
 import 'drill_generator.dart';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

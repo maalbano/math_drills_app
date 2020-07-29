@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 const kRightAnswerIcon = Icon(Icons.check, color: Colors.green);
 const kWrongAnswerIcon = Icon(Icons.close, color: Colors.red);
@@ -25,3 +26,10 @@ const kDrawerIconColor = Colors.white;
 const kDrawerIconSize = 30.0;
 
 const kBottomContainerHeight = 30.0;
+
+AlertStyle getAlertStyle(context) => AlertStyle(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      isOverlayTapDismiss: false,
+      descStyle: Theme.of(context).textTheme.bodyText1,
+      titleStyle: Theme.of(context).textTheme.headline5,
+    );
