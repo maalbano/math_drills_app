@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mathdrillsapp/bottom_button.dart';
-import 'package:mathdrillsapp/drill.dart';
 import 'package:mathdrillsapp/drill_generator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'constants.dart';

@@ -41,14 +41,6 @@ class _QuizPageState extends State<QuizPage> {
     startTimer();
   }
 
-  String convertTimeString(int time) {
-    String mins = '${currentTime ~/ 60}';
-    String secs =
-        currentTime % 60 < 10 ? '0${currentTime % 60}' : '${currentTime % 60}';
-
-    return '$mins:$secs';
-  }
-
   void goToNextQuestion() {
     currentQuestion++;
 
@@ -57,6 +49,7 @@ class _QuizPageState extends State<QuizPage> {
 
       //stop the timer
       stopTimer();
+      drill.drillTime = currentTime;
 
       Alert(
         style: AlertStyle(
@@ -73,7 +66,7 @@ class _QuizPageState extends State<QuizPage> {
         context: context,
         title: 'Congratulations!',
         desc:
-            "You've Completed the Quiz with a final score of ${drill.finalScore} / ${drill.questions.length}! \nYour time is in ${convertTimeString(currentTime)}. \nShow your parents!",
+            "You've Completed the Quiz with a final score of ${drill.finalScore} / ${drill.questions.length}! \nYour time is ${Drill.convertTimeString(currentTime)}. \nShow your parents!",
         buttons: [
           DialogButton(
             child: Text(
@@ -437,7 +430,7 @@ class _QuizPageState extends State<QuizPage> {
           ),
           Container(
               child: Text(
-            convertTimeString(currentTime),
+            Drill.convertTimeString(currentTime),
             textAlign: TextAlign.center,
           ))
         ],

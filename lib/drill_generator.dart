@@ -2,13 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'drill.dart';
-import 'dart:math';
+
 
 class DrillSettings {
   bool addition;
   bool subtraction;
   bool multiplication;
-
   RangeValues firstOperandRange;
   RangeValues secondOperandRange;
 
