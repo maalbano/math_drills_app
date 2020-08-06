@@ -29,6 +29,8 @@ dependencies:
   flutter_range_slider: ^1.4.0
   google_fonts: ^1.1.0
   font_awesome_flutter: ^8.8.1
+  shared_preferences: ^0.5.8
+  localstorage: ^3.0.2+5
 
 flutter_icons:
   android: "ic_launcher"

@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:theme_provider/theme_provider.dart';
 
-import 'quiz_page.dart';
+import 'screens/quiz_page.dart';
 import 'package:flutter/material.dart';
-import 'drill_generator.dart';
+import 'models/drill_generator.dart';
 
 //void main() => runApp(MyApp());
 
@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Math Drills',
+        debugShowCheckedModeBanner: false,
         //theme: theme,
         home: ThemeConsumer(
           child: QuizPage(

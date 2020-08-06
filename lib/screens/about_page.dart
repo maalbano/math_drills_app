@@ -15,6 +15,7 @@ class _AboutPageState extends State<AboutPage> {
   double hiddenAvatarSize = 1;
 
   final kAnimationDuration = Duration(milliseconds: 800);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -216,24 +217,26 @@ class _AboutPageState extends State<AboutPage> {
           ),
         ),
         AnimatedPositioned(
-            bottom: 1,
-            left: 1,
-            width: hiddenAvatarSize,
-            height: hiddenAvatarSize,
-            duration: kAnimationDuration,
-            onEnd: () {
-              setState(() {
-                hiddenAvatarSize = 1;
-              });
-            },
-            child: AnimatedContainer(
-              padding: EdgeInsets.all(10),
+          bottom: 1,
+          left: 1,
+          width: hiddenAvatarSize,
+          height: hiddenAvatarSize,
+          duration: kAnimationDuration,
+          onEnd: () {
+            setState(() {
+              hiddenAvatarSize = 1;
+            });
+          },
+          child: AnimatedContainer(
+            padding: EdgeInsets.all(10),
 //              color: Colors.pink,
-              duration: Duration(seconds: 1),
-              child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage('assets/me_kiam.jpg')),
-            ))
+            duration: Duration(seconds: 1),
+            child: CircleAvatar(
+              radius: 60,
+              backgroundImage: AssetImage('assets/me_kiam.jpg'),
+            ),
+          ),
+        ),
       ],
     );
   }

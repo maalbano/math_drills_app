@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mathdrillsapp/bottom_button.dart';
-import 'package:mathdrillsapp/drill_generator.dart';
+import 'package:mathdrillsapp/components/bottom_button.dart';
+import 'package:mathdrillsapp/models/drill_generator.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'constants.dart';
+import '../constants.dart';
 
 class CustomDrillPage extends StatefulWidget {
   @override

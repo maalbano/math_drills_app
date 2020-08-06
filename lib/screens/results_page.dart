@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'drill.dart';
-import 'constants.dart';
+import '../models/drill.dart';
+import '../constants.dart';
+import 'package:mathdrillsapp/components/score_row.dart';
 
 class ResultsPage extends StatelessWidget {
   final Drill completedDrill;
@@ -23,31 +24,6 @@ class ResultsPage extends StatelessWidget {
 //        style: Theme.of(context).textTheme.headline6,
 //      ),
 //    ));
-
-    resultsList.add(
-      Center(
-        child: Container(
-          padding: EdgeInsets.all(8),
-          color: Theme.of(context).buttonColor,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(Icons.timelapse),
-              Text(
-                '${completedDrill.finalScore}/${completedDrill.answers.length}',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Icon(Icons.watch_later),
-              Text(
-                '${completedDrill.drillTimeString()}',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-
-            ],
-          ),
-        ),
-      ),
-    );
 
     for (int i = 0; i < completedDrill.questions.length; i++) {
       var q = completedDrill.questions[i];
@@ -90,6 +66,13 @@ class ResultsPage extends StatelessWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: <Widget>[
+            Center(
+              child: Container(
+                padding: EdgeInsets.all(8),
+                color: Theme.of(context).buttonColor,
+                child: ScoreRow(scoreText: '${completedDrill.finalScore}/${completedDrill.answers.length}', timeText: '${completedDrill.drillTimeString()}',),
+              ),
+            ),
             Expanded(
               child: ListView(
                 children: resultsList,

@@ -1,16 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mathdrillsapp/custom_drill_page.dart';
-import 'package:mathdrillsapp/results_page.dart';
-import 'drill_generator.dart';
-import 'drill.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'choice_button.dart';
-import 'constants.dart';
-import 'results_page.dart';
+import 'package:mathdrillsapp/screens/drill_log_page.dart';
 import 'package:theme_provider/theme_provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+import 'package:mathdrillsapp/models/drill_log.dart';
+import 'package:mathdrillsapp/models/drill_generator.dart';
+import 'package:mathdrillsapp/models/drill.dart';
+
+import 'package:mathdrillsapp/components/choice_button.dart';
+import '../constants.dart';
+
 import 'about_page.dart';
+import 'results_page.dart';
+import 'custom_drill_page.dart';
 
 class QuizPage extends StatefulWidget {
   final Drill drill;
@@ -24,10 +28,10 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
 
-  //Drill drill = DrillGenerator.getDrill();
   Drill drill;
+  DrillLog drillLog;
   int currentQuestion = 0;
-  int currentTime = 0;
+  int currentTime = -3;
 
   Timer t;
 
@@ -50,6 +54,8 @@ class _QuizPageState extends State<QuizPage> {
       //stop the timer
       stopTimer();
       drill.drillTime = currentTime;
+
+      drillLog.saveDrill(drill);
 
       Alert(
         style: AlertStyle(
@@ -157,7 +163,7 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void startTimer() {
-    currentTime = 0;
+    currentTime = -4;
     t = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         currentTime++;
@@ -169,6 +175,11 @@ class _QuizPageState extends State<QuizPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    drillLog = DrillLog();
+
+    //print('retrieved drill log with ${drills?.length} drills');
+    //print(drills);
+
     startTimer();
   }
 
@@ -203,7 +214,31 @@ class _QuizPageState extends State<QuizPage> {
                 padding: EdgeInsets.all(5),
               ),
               Divider(
-                color: Theme.of(context).dividerColor, //kDrawerDividerColor,
+                color: kDrawerDividerColor,
+              ),
+              ListTile(
+                onTap: () {
+                  print('Logs');
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return ThemeConsumer(
+                        child: DrillLogPage(),
+                      );
+                    }),
+                  );
+                },
+                leading: Icon(
+                  Icons.receipt,
+                  size: kDrawerIconSize,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title:
+                    Text('Logs', style: Theme.of(context).textTheme.headline6),
+              ),
+              Divider(
+                color: kDrawerDividerColor,
               ),
               ListTile(
                 onTap: () {
@@ -364,77 +399,100 @@ class _QuizPageState extends State<QuizPage> {
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Theme.of(context)
-                    .primaryColor
-                    .withAlpha(50), //kQuizPageTransparentBackgroundColor,
-              ),
-              margin: EdgeInsets.all(10.0),
-              child: Center(
-                child: Text(
-                  drill.questions[currentQuestion].question,
-                  textAlign: TextAlign.center,
+      body: currentTime < 0
+          ? Container(
+        margin: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Theme.of(context)
+                  .primaryColor
+                  .withAlpha(50), //kQuizPageTransparentBackgroundColor,
+            ),
+            padding: EdgeInsets.all(20),
+            child: Center(
+              child: Text(
+                  '${-currentTime}',
                   style: Theme.of(context)
                       .textTheme
-                      .headline2, //  kQuizPageQuestionTextStyle,
+                      .headline1,
                 ),
-              ),
             ),
-          ),
-          Expanded(
-            child: Row(
+          )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                ChoiceButton(
-                    choice: drill.questions[currentQuestion].choices[0],
-                    onPressed: () {
-                      checkAnswer(drill.questions[currentQuestion].choices[0]);
-                    }),
-                ChoiceButton(
-                    choice: drill.questions[currentQuestion].choices[1],
-                    onPressed: () {
-                      checkAnswer(drill.questions[currentQuestion].choices[1]);
-                    })
-              ],
-            ),
-          ),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                ChoiceButton(
-                  choice: drill.questions[currentQuestion].choices[2],
-                  onPressed: () {
-                    checkAnswer(drill.questions[currentQuestion].choices[2]);
-                  },
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Theme.of(context)
+                          .primaryColor
+                          .withAlpha(50), //kQuizPageTransparentBackgroundColor,
+                    ),
+                    margin: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Text(
+                        drill.questions[currentQuestion].question,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline2, //  kQuizPageQuestionTextStyle,
+                      ),
+                    ),
+                  ),
                 ),
-                ChoiceButton(
-                    choice: drill.questions[currentQuestion].choices[3],
-                    onPressed: () {
-                      checkAnswer(drill.questions[currentQuestion].choices[3]);
-                    }),
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      ChoiceButton(
+                          choice: drill.questions[currentQuestion].choices[0],
+                          onPressed: () {
+                            checkAnswer(
+                                drill.questions[currentQuestion].choices[0]);
+                          }),
+                      ChoiceButton(
+                          choice: drill.questions[currentQuestion].choices[1],
+                          onPressed: () {
+                            checkAnswer(
+                                drill.questions[currentQuestion].choices[1]);
+                          })
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      ChoiceButton(
+                        choice: drill.questions[currentQuestion].choices[2],
+                        onPressed: () {
+                          checkAnswer(
+                              drill.questions[currentQuestion].choices[2]);
+                        },
+                      ),
+                      ChoiceButton(
+                          choice: drill.questions[currentQuestion].choices[3],
+                          onPressed: () {
+                            checkAnswer(
+                                drill.questions[currentQuestion].choices[3]);
+                          }),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: scoreKeeper,
+                ),
+                Container(
+                    child: Text(
+                  Drill.convertTimeString(currentTime),
+                  textAlign: TextAlign.center,
+                ))
               ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: scoreKeeper,
-          ),
-          Container(
-              child: Text(
-            Drill.convertTimeString(currentTime),
-            textAlign: TextAlign.center,
-          ))
-        ],
-      ),
     );
   }
 }
