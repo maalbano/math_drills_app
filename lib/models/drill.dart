@@ -9,6 +9,14 @@ class Question {
 
   Question(this.question, this.answer);
 
+  Question.fromMap(Map<String, dynamic> m) {
+    question = m['q'];
+    answer = m['a'];
+    List l = m['choices'];
+    l.forEach((element) {choices.add(element.toString());});
+
+  }
+
   @override
   String toString() {
     return '$question = $answer';
@@ -22,7 +30,6 @@ class Question {
     m['choices'] = choices;
 
     return m;
-
   }
 }
 
@@ -34,14 +41,21 @@ enum DrillType {
   custom,
 }
 
+DrillType convertToType(String s) {
+  if (s == 'addition') return DrillType.addition;
+  if (s == 'subtraction') return DrillType.subtraction;
+  if (s == 'multiplication') return DrillType.multiplication;
+  if (s == 'division') return DrillType.division;
+  if (s == 'custom') return DrillType.custom;
+}
+
 class Drill {
   //A set of questions
   //Records the answers, and the final score.
 
   static String convertTimeString(int time) {
     String mins = '${time ~/ 60}';
-    String secs =
-    time % 60 < 10 ? '0${time % 60}' : '${time % 60}';
+    String secs = time % 60 < 10 ? '0${time % 60}' : '${time % 60}';
 
     return '$mins:$secs';
   }
@@ -54,6 +68,23 @@ class Drill {
   DrillSettings settings;
 
   Drill({@required this.questions, @required this.type, this.settings});
+
+  Drill.fromMap(Map<String, dynamic> m) {
+    questions = [];
+    List<dynamic> l = m['questions'];
+    l.forEach((element) {
+      questions.add(Question.fromMap(element));
+    });
+    l = m['answers'];
+    l.forEach((element) {
+      answers.add(element.toString());
+    });
+    // answers = m['answers'];
+    finalScore = m['finalScore'];
+    drillTime = m['drillTime'];
+    type = convertToType(m['type']);
+    settings = m['settings'];
+  }
 
   toJSONEncodable() {
     Map<String, dynamic> m = new Map();

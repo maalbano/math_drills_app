@@ -2,6 +2,8 @@ import 'package:mathdrillsapp/models/drill_log.dart';
 import 'package:mathdrillsapp/models/drill.dart';
 import 'package:flutter/material.dart';
 import 'package:mathdrillsapp/components/score_row.dart';
+import 'package:mathdrillsapp/screens/results_page.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 class DrillLogPage extends StatefulWidget {
   @override
@@ -47,10 +49,21 @@ class _DrillLogPageState extends State<DrillLogPage> {
     );
   }
 
-  ListTile makeDrillListTile(String k, dynamic v) {
+  Widget makeDrillListTile(String k, dynamic v) {
     DateTime t = DateTime.fromMillisecondsSinceEpoch(int.tryParse(k));
 
     return ListTile(
+      trailing: IconButton(
+        icon: Icon(Icons.chevron_right, size: 40, color: Theme.of(context).buttonColor,),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ThemeConsumer(
+                      child: ResultsPage(t: t,completedDrill: Drill.fromMap(v)))));
+        },
+      ),
+
       tileColor: Theme.of(context).cardColor,
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -72,7 +85,10 @@ class _DrillLogPageState extends State<DrillLogPage> {
   Widget buildListViewTable(Map<String, dynamic> drillList) {
     List<Widget> rows = [];
 
-    drillList?.forEach((k, v) => rows.add(makeDrillListTile(k, v)));
+    drillList?.forEach((k, v) {
+      rows.add(makeDrillListTile(k, v));
+      rows.add(Divider(height: 2,));
+    });
 
     return ListView(children: rows);
   }

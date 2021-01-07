@@ -218,7 +218,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               ListTile(
                 onTap: () {
-                  print('Logs');
+                  print('Logs and Stats');
 
                   Navigator.push(
                     context,
@@ -235,7 +235,7 @@ class _QuizPageState extends State<QuizPage> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title:
-                    Text('Logs', style: Theme.of(context).textTheme.headline6),
+                    Text('Logs and Stats', style: Theme.of(context).textTheme.headline6),
               ),
               Divider(
                 color: kDrawerDividerColor,
