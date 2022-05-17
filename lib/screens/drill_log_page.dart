@@ -1,3 +1,4 @@
+import 'package:mathdrillsapp/components/stats_panel.dart';
 import 'package:mathdrillsapp/models/drill_log.dart';
 import 'package:mathdrillsapp/models/drill.dart';
 import 'package:flutter/material.dart';
@@ -53,16 +54,19 @@ class _DrillLogPageState extends State<DrillLogPage> {
     DateTime t = DateTime.fromMillisecondsSinceEpoch(int.tryParse(k));
 
     return ListTile(
-      trailing: IconButton(
-        icon: Icon(Icons.chevron_right, size: 40, color: Theme.of(context).buttonColor,),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ThemeConsumer(
-                      child: ResultsPage(t: t,completedDrill: Drill.fromMap(v)))));
-        },
+      trailing: Icon(
+        Icons.chevron_right,
+        size: 40,
+        color: Theme.of(context).buttonColor,
       ),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ThemeConsumer(
+                    child:
+                        ResultsPage(t: t, completedDrill: Drill.fromMap(v)))));
+      },
 
       tileColor: Theme.of(context).cardColor,
       leading: Column(
@@ -85,9 +89,32 @@ class _DrillLogPageState extends State<DrillLogPage> {
   Widget buildListViewTable(Map<String, dynamic> drillList) {
     List<Widget> rows = [];
 
+    rows.add(
+      ListTile(
+        title: Text(
+          'View Stats',
+          textAlign: TextAlign.center,
+        ),
+        tileColor: Theme.of(context).canvasColor,
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                    title: Text(
+                      'Stats Page',
+                    ),
+                    content: StatsPanel(drillLog));
+              });
+        },
+      ),
+    );
+
     drillList?.forEach((k, v) {
       rows.add(makeDrillListTile(k, v));
-      rows.add(Divider(height: 2,));
+      rows.add(Divider(
+        height: 2,
+      ));
     });
 
     return ListView(children: rows);

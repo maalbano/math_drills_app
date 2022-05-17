@@ -49,5 +49,32 @@ class DrillLog {
    return _allDrills;
  }
 
+ double computeAccuracy() {
+
+    double total = 0;
+    double max = 0;
+
+    _allDrills.forEach((key, value) {
+      Drill drill = Drill.fromMap(value);
+      total += drill.finalScore;
+      max += drill.questions.length;
+    });
+
+    return total/max * 100;
+
+ }
+
+ double computeAveSpeed() {
+   double total = 0;
+
+
+   _allDrills.forEach((key, value) {
+     Drill drill = Drill.fromMap(value);
+     total += drill.drillTime;
+   });
+
+   return total/_allDrills.length;
+ }
+
 
 }
